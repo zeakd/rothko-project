@@ -1,0 +1,4 @@
+[submodule "dist/demo"]
+	path = dist/demo
+	url = https://github.com/zeakd/rothko.js
+	branch = gh-pages
