@@ -1,0 +1,12 @@
+[submodule "dist/drawing-kit"]
+	path = dist/drawing-kit
+	url = https://github.com/zeakd/drawing-kit.js
+[submodule "dist/histogram-analyze.js"]
+	path = dist/histogram-analyze.js
+	url = https://github.com/zeakd/histogram-analyze.js
+[submodule "dist/rothko"]
+	path = dist/rothko
+	url = https://github.com/zeakd/rothko.js
+[submodule "dist/histogram-analyze"]
+	path = dist/histogram-analyze
+	url = https://github.com/zeakd/histogram-analyze.js
