@@ -1,0 +1,11 @@
+{
+    "spaceUnits": 4,
+    "language": {
+        "css": {
+            "spaceUnits": 2
+        },
+        "scss": {
+            "spaceUnits": 2
+        }
+    }
+}

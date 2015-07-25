@@ -1,29 +1,50 @@
-var drawingKit = {
-    Canvas : typeof Canvas !== 'undefined' ? Canvas : function(width, height){
+if(typeof Canvas === 'undefined') {
+    var Canvas = function(width, height){
         var canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
         return canvas;
-    },
-    isCanvas : function(imageObj){
-        return imageObj instanceof Canvas || imageObj instanceof HTMLImageElement;
-    },
+    }
+}
+
+function isCanvas(elem) {
+    return elem instanceof Canvas || elem instanceof HTMLCanvasElement;
+}
+
+var drawingKit = {
+    Canvas : Canvas,
 //    isCanvas : isNodeModule ? function(imageObj){
 //        return imageObj instanceof Canvas;} 
-//        : function(imageObj){
+//        : function(imageObj){cnv
 //        return imageObj instanceof HTMLCanvasElement;
 //    },
+    isCanvas : isCanvas,
     isImage : function(imageObj){
         return imageObj instanceof Image || 
             imageObj.toString() === "[object HTMLImageElement]";   
     },
     
     setPixel : function(target, x, y, r, g, b, a){
+        
         color = typeof r === 'object' ? r : {r: r, g: g, b: b, a: a};
-        if(target.constructor.name === "CanvasRenderingContext2D"){
-            target.fillStyle = 'rgba('+color.r+','+color.g+','+color.b+','+color.a+')';
-            target.fillRect(x,y,1,1);
-        } else if(target.constructor.name === "ImageData"){
+        function makeNumber(raw) {
+            var rounded = Math.round(raw);
+//            if( rounded > 255 ) { rounded = 255; }
+//            if( rounded < 0 ) { rounded = 0; }
+            return rounded;
+        }
+        if( color.r > 255 || color.r < 0 ) return;
+        if( color.g > 255 || color.g < 0 ) return;
+        if( color.b > 255 || color.b < 0 ) return;
+        color.r = makeNumber(color.r);
+        color.g = makeNumber(color.g);
+        color.b = makeNumber(color.b);
+
+        color.a = typeof color.a === 'undefined' ? 255 : color.a;
+        for(i in color){
+            color[i] = color[i] | 0;   
+        }
+        if(target.constructor.name === "ImageData"){
             if(a < 1) parseInt( a * 255 );
             var index = (y * target.width + x) * 4;
             target.data[index + 0] = color.r;
@@ -31,11 +52,27 @@ var drawingKit = {
             target.data[index + 2] = color.b;
             target.data[index + 3] = color.a;
         } else {
-            throw target;
+            if (isCanvas(target)) {
+                target = target.getContext('2d');
+            } 
+            if(target.constructor.name === "CanvasRenderingContext2D") {
+                target.fillStyle = 'rgba('+color.r+','+color.g+','+color.b+','+color.a+')';
+                target.fillRect(x,y,1,1);
+            } else {
+                throw target;
+            }
         }
     },
-    pixelLooper: function(target, cb){
-        imageData = target.constructor.name === "CanvasRenderingContext2D" ? target.getImageData(0,0,target.width, target.height) : target;
+    /**
+    * Add two numbers.
+    * @param {object} target
+    * @param {function} callback
+    */
+    pixelLooper: function(target, pixelController){
+        imageData = isCanvas(target) ? 
+            target
+            .getContext('2d')
+            .getImageData(0,0,target.width, target.height) : target;
         for(var x = 0; x < imageData.width; ++x){
             for(var y = 0; y < imageData.height; ++y){
                 var index = (x + y * imageData.width) * 4;
@@ -43,7 +80,7 @@ var drawingKit = {
                 var g = imageData.data[index + 1];
                 var b = imageData.data[index + 2];
                 var a = imageData.data[index + 3];
-                cb(x,y,r,g,b,a);
+                pixelController(x,y,r,g,b,a);
             }
         }
     },

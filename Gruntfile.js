@@ -1,19 +1,39 @@
 module.exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
+    var config = {
+        display: 'display',
+        dist: 'dist',
+        demo: 'dist/demo'
+    };
+    
     grunt.initConfig({
+        config: config,
         watch: {
-            files: 'src/*.js'
+            sass: {
+                files: [
+                    '<%= config.display %>/styles/{,*/}*.scss'
+                ],
+                tasks: ['sass:dev']
+            }
         },
         browserSync: {
             dev:{
                 bsFiles: {
-                    src: ['./display/*.html', 'src']
+                    src: [
+                        '<%= config.display %>/index.html',
+                        '<%= config.display %>/scripts/{,*/}*.*', 
+                        '<%= config.display %>/images/{,*/}*.*', 
+                        'src/{,*/}*.*', 
+                        '.tmp/styles/{,*/}*.css'
+                    ]
                 },
                 options: {
+                    watchTask: true,
                     server: {
-                        baseDir: ["./display", "./src"]
+                        baseDir: ["./display", "./src", "./.tmp"]
                     },
-                    browser: "google chrome"
+                    browser: "google chrome",
+                    open: false
                 }
             },
             demo:{
@@ -124,8 +144,54 @@ module.exports = function(grunt) {
                 src: ['rothko.js'],
                 dest: 'dist/demo/scripts/vendor'
             },
+        },
+        sass: {
+            options: {
+                sourceMap: false,
+                styles: 'expanded'
+//                includePaths: [''];
+            },
+            dev: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= config.display %>/styles/',
+                    src: ['*.scss'],
+                    dest: '.tmp/styles',
+                    ext: '.css'
+                }]
+            },
+            demo: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= config.display %>/styles/',
+                    src: ['*.scss'],
+                    dest: '<%= config.demo %>/styles',
+                    ext: '.css'
+                }]
+            }
         }
     });
+    grunt.registerTask('serve', function(target) {
+        if (target === 'dev') {
+            grunt.task.run([
+                'clean:tmp',
+                'sass:dev',
+                'browserSync:dev',
+                'watch'
+            ])
+        } else if (target === 'demo') {
+            grunt.task.run([
+                'sass:demo',
+                'browserSync:demo'
+            ])
+        }
+    })
+//    grunt.registerTask('serve', [
+//        'clean:tmp',
+//        'sass:dev',
+//        'browserSync:dev',
+//        'watch'
+//    ]);
     grunt.registerTask('build', [
         'clean:demo',
 //        'useminPrepare',

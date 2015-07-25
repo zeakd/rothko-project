@@ -1,0 +1,51 @@
+@import "normalize";
+@import "test";
+
+$header-height:             50px;
+$header-padding-top:        40px;
+$logo-font-size:            30px;
+$nav-gap:                   12px;
+$main-max-width:            780px;
+$main-padding-top:          $header-height + $header-padding-top;
+$screen-tablet-max:         991px;
+$screen-mobile-max:         767px;
+.header {
+  &-container {
+    margin: 0 auto;
+    max-width: $main-max-width;  
+  }
+  position: fixed;
+  top: 0;
+  width : 100%;
+  height : $header-height;
+  padding-top : $header-padding-top;
+//  background-color: black;
+  ul {
+    list-style: none;
+  } 
+  a {
+      line-height: $header-height;
+      display: inline-block;
+  }
+  .logo {
+    @extend a;
+    font-size : $logo-font-size;
+    font-weight: bold;
+//    color: white;
+  }
+  .nav {
+    display: inline-block;
+    float: right;
+    a {
+      padding-left: $nav-gap; 
+      @extend a;
+//      color: white;
+    }
+  }
+  
+}
+#main {
+  margin: 0 auto;
+  max-width: $main-max-width;
+  margin-top: $main-padding-top;
+}
