@@ -1,0 +1,11 @@
+img, canvas {
+    vertical-align: middle;
+}
+
+#test {
+  width : 20%;
+  margin: auto;
+}
+.figure {
+  width : 100%; 
+}

@@ -96,9 +96,16 @@ function rgb2xyz(r,g,b) {
         b = r.b;
         r = r.r;
     }
-    r /= 255.0;
-    g /= 255.0;
-    b /= 255.0;
+    function linear(t) {
+        if ((t /=255) <= 0.04045) {
+            return t / 12.92;
+        } else {
+            return pow((t + 0.055) / 1.055, 2.4);   
+        }
+    }
+    r = linear(r);
+    g = linear(g);
+    b = linear(b);
     return {
         x: roundDecimal(0.412456*r + 0.357576*g + 0.180438*b, 6),
         y: roundDecimal(0.212673*r + 0.715152*g + 0.072175*b, 6),
@@ -129,8 +136,8 @@ var CONSTANTS = {
 }   
 function xyz2lab(x,y,z) {
      if( isObject(x) ) {
-        y = x.z;
-        z = x.y;
+        y = x.y;
+        z = x.z;
         x = x.x;
     }
     function f(t) {
@@ -245,14 +252,18 @@ dCompareWheel.appendChild(lchWheel.canvas());
 //    this.setPixel(x, y, rgb);
 //}.bind(hsvWheel));
 var l = 0;
-var id = setInterval(function(){
-    if( l > 100){ clearInterval(id); }
-    fillBackground(hsvWheel.canvas(), '#ffffff');
-    fillBackground(lchWheel.canvas(), '#ffffff');
-    hsvWheel.setPixelLooper(testHsv(l/100).bind(hsvWheel));
-    lchWheel.setPixelLooper(testLch(l).bind(lchWheel));
-    l+= 5;
-}, 2000);
+fillBackground(hsvWheel.canvas(), '#ffffff');
+fillBackground(lchWheel.canvas(), '#ffffff');
+hsvWheel.setPixelLooper(testHsv(l/100).bind(hsvWheel));
+lchWheel.setPixelLooper(testLch(l).bind(lchWheel));
+//var id = setInterval(function(){
+//    if( l > 100){ clearInterval(id); }
+//    fillBackground(hsvWheel.canvas(), '#ffffff');
+//    fillBackground(lchWheel.canvas(), '#ffffff');
+//    hsvWheel.setPixelLooper(testHsv(l/100).bind(hsvWheel));
+//    lchWheel.setPixelLooper(testLch(l).bind(lchWheel));
+//    l+= 5;
+//}, 2000);
 //setTimeout( function (){
 //    var run = false;
 //    for( var l = 0; l<= 100; ){
